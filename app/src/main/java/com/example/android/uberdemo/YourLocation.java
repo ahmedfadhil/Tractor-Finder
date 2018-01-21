@@ -7,9 +7,14 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.service.autofill.SaveCallback;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,6 +22,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
+
+import java.text.ParseException;
+import java.util.List;
 
 public class YourLocation extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -26,12 +36,63 @@ public class YourLocation extends FragmentActivity implements OnMapReadyCallback
     LocationManager locationManager;
     String provider;
 
+    TextView infoTextView;
+    Button requestTractor;
+    Boolean requestActive = false;
 
+    public void requestTractor(View view) {
+
+        if (requestActive == false) {
+            Log.i("MyApp", "Tractor Requested");
+            final ParseObject request = new ParseObject("Requests");
+            request.put("requesterUsername", ParseUser.getCurrentUser.getUsername());
+            ParseACL parseACL = new ParseACL();
+            parseACL.setPublicWriteAccess(true);
+            parseACL.setPublicReadAccess(true);
+
+            request.setACL(parseACL);
+            request.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        infoTextView.setText("Finding Tractor Driver ...");
+                        requestTractor.setText("Cancel Tractor");
+                        requestActive = true;
+                    }
+                }
+            });
+        } else {
+
+            infoTextView.setText("Tractor Cancelled");
+            requestTractor.setText("Request Tractor");
+            requestActive = false;
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Requests");
+            query.whereEqualTo("requesterUsername", ParseUser.getCurrentUser().getUsername());
+            query.findInBackground(new FindCallBack<ParseObject>(){
+
+                @Override
+                public void done(List<ParseObject> objects,ParseException e){
+                    if (e==null){
+                        if (objects.size()>0){
+                            for (ParseObject object:objects){
+                                object.deleteInBackground();
+                            }
+                        }
+                    }
+                }
+            });
+
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_your_location);
+
+        infoTextView = (TextView) findViewById(R.id.infoTextView);
+        requestTractor = (Button) findViewById(R.id.requestTractor);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
