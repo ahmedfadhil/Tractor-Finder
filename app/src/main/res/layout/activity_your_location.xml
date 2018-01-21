@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/holo_orange_dark"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    tools:layout_editor_absoluteX="26dp">
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.android.uberdemo.YourLocation" />
+
+    <Button
+        android:id="@+id/requestTractor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:background="?android:attr/colorEdgeEffect"
+        android:onClick="requestTractor"
+        android:text="Request Tractor"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/requestTractor"
+        android:layout_alignBottom="@+id/requestTractor"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp"
+        android:text="Tractor Requested"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="20sp" />
+</RelativeLayout>
